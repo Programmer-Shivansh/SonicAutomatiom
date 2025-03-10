@@ -32,7 +32,7 @@ function NodePlugin({
     updateNodeData(nodeId, {
       plugins: plugins,
     });
-  }, [nodeId, updateNodeData, node?.data.plugins]);
+  }, [nodeId, updateNodeData]); // Removed unnecessary dependency
 
   if (!task.isAgent) {
     return null;

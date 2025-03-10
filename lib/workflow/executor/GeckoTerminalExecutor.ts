@@ -5,6 +5,11 @@ import { symmetricDecrypt } from "@/lib/encryption";
 import { sonicBlazeTestnet } from "@/lib/chains";
 import { GeckoTerminalPlugin } from "@/lib/goat-plugins/gecko-terminal-plugin";
 
+// Define parameter types based on action
+type TokenPriceParams = { tokenAddress: string };
+type PoolInfoParams = { poolAddress: string };
+type TopListParams = { limit: number };
+
 export async function GeckoTerminalExecutor(
   environment: ExecutionEnvironment<typeof GeckoTerminalTask>
 ): Promise<boolean> {
@@ -52,24 +57,35 @@ export async function GeckoTerminalExecutor(
     environment.log.info(`Chain: ${JSON.stringify(sonicBlazeTestnet)}`);
     environment.log.info(`Executing ${action} for token ${tokenAddress} on Sonic Blaze Testnet`);
     
-    // Execute the tool with the provided parameters
-    let parameters = {};
+    // Execute the tool with the properly typed parameters for each action
+    let result;
     
     switch(action) {
-      case "getTokenPrice":
-      case "getPoolInfo":
-        parameters = { 
-          tokenAddress: action === "getTokenPrice" ? tokenAddress : undefined,
-          poolAddress: action === "getPoolInfo" ? tokenAddress : undefined
-        };
+      case "getTokenPrice": {
+        // Cast the tool to accept TokenPriceParams
+        const tokenPriceTool = tool as { execute: (params: TokenPriceParams) => Promise<any> };
+        result = await tokenPriceTool.execute({ tokenAddress });
         break;
+      }
+      case "getPoolInfo": {
+        // Cast the tool to accept PoolInfoParams
+        const poolInfoTool = tool as { execute: (params: PoolInfoParams) => Promise<any> };
+        result = await poolInfoTool.execute({ poolAddress: tokenAddress });
+        break;
+      }
       case "getTopTokens":
-      case "getTopPools":
-        parameters = { limit: 10 };
+      case "getTopPools": {
+        // Cast the tool to accept TopListParams
+        const topListTool = tool as { execute: (params: TopListParams) => Promise<any> };
+        result = await topListTool.execute({ limit: 10 });
         break;
+      }
+      default: {
+        // For unknown actions, fall back to tokenAddress
+        const defaultTool = tool as { execute: (params: TokenPriceParams) => Promise<any> };
+        result = await defaultTool.execute({ tokenAddress });
+      }
     }
-    
-    const result = await tool.execute(parameters);
     
     environment.setOutput("Response", result);
     return true;
@@ -77,4 +93,4 @@ export async function GeckoTerminalExecutor(
     environment.log.error(error.message);
     return false;
   }
-} 
+}
