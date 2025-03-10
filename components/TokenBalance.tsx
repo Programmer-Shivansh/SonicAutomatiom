@@ -11,7 +11,7 @@ import { Coins } from "lucide-react";
 
 // Sonic token contract
 const SONIC_TOKEN = {
-  address: "0x9f1a2c33088f7a8c19f3ffb70b8666f9dad72f77",
+  address: "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38",
   decimals: 18
 };
 
@@ -60,7 +60,7 @@ export default function TokenBalance() {
           functionName: 'balanceOf',
           args: [address as `0x${string}`]
         });
-        setTokenBalance(formatEther(tokenResult));
+        setTokenBalance(formatEther(tokenResult as bigint));
       } catch (error) {
         console.error("Error fetching balances:", error);
         setNativeBalance(null);
