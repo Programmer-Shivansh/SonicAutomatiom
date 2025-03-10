@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 175 30% 95%;
+    --foreground: 200 50% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 50% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 50% 15%;
+    --primary: 180 80% 35%;
+    --primary-foreground: 155 20% 98%;
+    --secondary: 170 30% 90%;
+    --secondary-foreground: 200 35% 20%;
+    --muted: 170 30% 90%;
+    --muted-foreground: 200 20% 40%;
+    --accent: 340 90% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 85% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 180 30% 85%;
+    --input: 180 30% 85%;
+    --ring: 180 80% 35%;
+    --radius: 1rem;
+    --chart-1: 180 80% 40%;
+    --chart-2: 210 70% 50%;
+    --chart-3: 150 65% 40%;
+    --chart-4: 340 85% 55%;
+    --chart-5: 45 85% 50%;
+  }
+
+  .dark {
+    --background: 200 50% 10%;
+    --foreground: 170 30% 90%;
+    --card: 200 50% 12%;
+    --card-foreground: 170 30% 90%;
+    --popover: 200 50% 12%;
+    --popover-foreground: 170 30% 90%;
+    --primary: 180 80% 45%;
+    --primary-foreground: 200 50% 15%;
+    --secondary: 200 35% 20%;
+    --secondary-foreground: 170 30% 90%;
+    --muted: 200 35% 20%;
+    --muted-foreground: 170 30% 75%;
+    --accent: 340 90% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 35% 25%;
+    --input: 200 35% 25%;
+    --ring: 180 80% 45%;
+    --chart-1: 180 80% 50%;
+    --chart-2: 210 70% 60%;
+    --chart-3: 150 65% 50%;
+    --chart-4: 340 85% 65%;
+    --chart-5: 45 85% 60%;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.react-flow__attribution {
+  background: transparent !important;
+}
+
+.dark {
+  .react-flow__controls-button {
+    @apply !bg-accent;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
