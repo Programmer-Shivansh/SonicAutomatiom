@@ -46,8 +46,8 @@ function CreateCredentialDialog({ triggerText }: { triggerText?: string }) {
       form.reset();
       setOpen(false);
     },
-    onError: () => {
-      toast.error("Failed to create credential", { id: "create-credential" });
+    onError: (error: Error) => {
+      toast.error(`Failed to create credential: ${error.message || "Unknown error"}`, { id: "create-credential" });
     },
   });
 
