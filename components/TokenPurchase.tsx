@@ -11,11 +11,10 @@ import { createPublicClient, createWalletClient, custom, parseEther, formatEther
 import { sonicBlazeTestnet } from "@/lib/chains";
 import { GeckoTerminalPlugin } from "@/lib/goat-plugins/gecko-terminal-plugin";
 
-// Sonic token contract on Blaze Testnet
 const SONIC_TOKEN = {
   name: "Sonic Token",
   symbol: "SONIC",
-  address: "0x9f1a2c33088f7a8c19f3ffb70b8666f9dad72f77", // Sonic token contract
+  address: "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38" as `0x${string}`,
   decimals: 18
 };
 
@@ -30,7 +29,9 @@ export default function TokenPurchase() {
   const [tokenPrice, setTokenPrice] = useState<number | null>(null);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
 
-  // Fetch token price from GeckoTerminal
+  // You'll need to get the correct pool address for SONIC token on Sonic Blaze Testnet
+  const POOL_ADDRESS = "0xYOUR_POOL_ADDRESS_HERE" as `0x${string}`; // Replace with actual pool address
+
   useEffect(() => {
     const fetchTokenPrice = async () => {
       setIsLoadingPrice(true);
@@ -40,7 +41,10 @@ export default function TokenPurchase() {
         const getPrice = tools.find(t => t.name === "getTokenPrice");
         
         if (getPrice) {
-          const response = await getPrice.execute({ tokenAddress: SONIC_TOKEN.address });
+          const response = await getPrice.execute({ 
+            tokenAddress: SONIC_TOKEN.address,
+            poolAddress: POOL_ADDRESS // Added required poolAddress
+          });
           const data = JSON.parse(response);
           
           if (data.data?.attributes?.price_usd) {
@@ -55,7 +59,6 @@ export default function TokenPurchase() {
     };
 
     fetchTokenPrice();
-    // Refresh price every minute
     const interval = setInterval(fetchTokenPrice, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -89,19 +92,16 @@ export default function TokenPurchase() {
       setStatus("pending");
       setErrorMessage("");
 
-      // Create wallet client connected to MetaMask
       const walletClient = createWalletClient({
         chain: sonicBlazeTestnet,
         transport: custom(window.ethereum)
       });
 
-      // Create public client for contract interactions
       const publicClient = createPublicClient({
         chain: sonicBlazeTestnet,
         transport: custom(window.ethereum)
       });
 
-      // Get token contract ABI (minimal ABI for token purchase)
       const tokenABI = [
         {
           "inputs": [{"internalType": "address", "name": "recipient", "type": "address"}],
@@ -112,22 +112,23 @@ export default function TokenPurchase() {
         }
       ];
 
-      // Prepare transaction data
       const { request } = await publicClient.simulateContract({
-        address: SONIC_TOKEN.address as `0x${string}`,
+        account: address as `0x${string}`,
+        address: SONIC_TOKEN.address,
         abi: tokenABI,
         functionName: 'buy',
         args: [address as `0x${string}`],
         value: parseEther(amount)
       });
 
-      // Send transaction
-      const hash = await walletClient.writeContract(request);
+      const hash = await walletClient.writeContract({
+        ...request,
+        account: address as `0x${string}` // Added account explicitly
+      });
 
       setTxHash(hash);
       setStatus("success");
 
-      // Wait for transaction confirmation
       await publicClient.waitForTransactionReceipt({ hash });
     } catch (error) {
       console.error("Transaction error:", error);
@@ -220,18 +221,22 @@ export default function TokenPurchase() {
       </CardContent>
 
       <CardFooter>
-        {status === "idle" ? (
+        {status === "idle" || status === "pending" ? (
           <Button
             className="w-full"
-            onClick={handlePurchase}
+            onClick={status === "idle" ? handlePurchase : undefined}
             disabled={!isConnected || !amount || status === "pending" || !tokenPrice}
           >
-            {!isConnected ? "Connect Wallet to Buy" : "Buy Tokens"}
-          </Button>
-        ) : status === "pending" ? (
-          <Button className="w-full" disabled>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Processing...
+            {status === "pending" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : !isConnected ? (
+              "Connect Wallet to Buy"
+            ) : (
+              "Buy Tokens"
+            )}
           </Button>
         ) : (
           <Button className="w-full" onClick={resetForm} variant="outline">
@@ -242,4 +247,4 @@ export default function TokenPurchase() {
       </CardFooter>
     </Card>
   );
-} 
+}

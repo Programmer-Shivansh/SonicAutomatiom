@@ -19,7 +19,7 @@ export class GeckoTerminalPlugin {
         },
         execute: async (parameters: { tokenAddress: string }) => {
           try {
-            const response = await fetch(`${this.baseUrl}/networks/sonic_blaze_testnet/tokens/${parameters.tokenAddress}`);
+            const response = await fetch(`${this.baseUrl}/networks/sonic/tokens/${parameters.tokenAddress}`);
             if (!response.ok) {
               throw new Error(`Failed to fetch token data: ${response.statusText}`);
             }
