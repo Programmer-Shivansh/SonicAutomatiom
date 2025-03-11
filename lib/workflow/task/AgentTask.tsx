@@ -41,6 +41,7 @@ export const AgentTask = {
     {
       name: "Response",
       type: TaskParamType.STRING,
+      hideHandle: false,
     },
   ] as const,
 } satisfies WorkflowTask;

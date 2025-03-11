@@ -20,6 +20,10 @@ export const InputTextTask = {
     },
   ] as const,
   outputs: [
-    { name: "Text", type: TaskParamType.STRING },
+    { 
+      name: "Text", 
+      type: TaskParamType.STRING,
+      hideHandle: false  // Explicitly set to false to ensure the output connection is visible
+    },
   ] as const,
 } satisfies WorkflowTask;

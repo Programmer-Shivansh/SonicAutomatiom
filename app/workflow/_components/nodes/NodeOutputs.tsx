@@ -12,9 +12,9 @@ export function NodeOutputs({ children }: { children: ReactNode }) {
 
 export function NodeOutput({ output }: { output: TaskParam }) {
   return (
-    <div className="flex justify-end relative p-3 bg-secondary/70 hover:bg-secondary transition-colors">
+    <div className="flex justify-end relative p-3 bg-secondary/70 hover:bg-secondary transition-colors ">
       <p className="text-xs text-muted-foreground font-medium">{output.name}</p>
-      <Handle
+      {/* <Handle
         id={output.name}
         type="source"
         position={Position.Right}
@@ -22,7 +22,19 @@ export function NodeOutput({ output }: { output: TaskParam }) {
           "!bg-muted-foreground !border-2 !border-background !-right-2 !w-4 !h-4 transition-colors",
           ColorForHandle[output.type]
         )}
-      />
+      /> */}
+      {!output.hideHandle && (
+        <Handle
+          id={output.name}
+          // isConnectable={!isConnected}
+          type="target"
+          position={Position.Right}
+          className={cn(
+            "!bg-muted-foreground !border-2 !border-background !-left-0.9 !w-4 !h-4",
+            ColorForHandle[output.type]
+          )}
+        />
+      )}
     </div>
   );
 }
